@@ -97,11 +97,8 @@ int diag_enable_warning(const char *name, int on);    /* -Wname / -Wno-name;
                                                        * 0 = no such warning */
 void diag_enable_group(int wall, int wextra);         /* -Wall / -Wextra */
 int diag_warning_count(void);                         /* for --help */
-/* How many warnings were REPORTED (the one above counts OPTIONS). */
-int diag_warnings_reported(void);
 const char *diag_warning_name(int i);
 int diag_warning_group(int i);                        /* 0 none, 1 all, 2 extra */
-int diag_warning_default_on(int i);                   /* 1 when on unasked */
 int diag_print_reference(FILE *out);                  /* --reference=warnings */
 
 /* An option as the user typed it, for messages (util.c): what the driver
@@ -128,17 +125,12 @@ void diag_verror_at(const char *file, int line, int col, const char *fmt,
 enum { DIAG_ERROR, DIAG_WARNING, DIAG_NOTE };
 enum { DIAG_TEXT, DIAG_JSON };
 
-/* Widen the last diagnostic's caret to end at `end_col` (exclusive). Without
- * one, a caret underlines the identifier or number it lands on. */
-void diag_range(int end_col);
-
 /* Tag the diagnostic just raised with an explain id ("E0001"), which is
  * printed with it and understood by `embcc --explain`. */
 void diag_set_id(const char *id);
 
 /* src/driver/explain.c */
 int explain_print(const char *id);      /* NULL/"" lists them */
-const char *explain_title(const char *id);
 /* The standard header that declares this name, or NULL: a name that is not
  * declared is most often a missing #include. */
 const char *header_declaring(const char *name);

@@ -191,7 +191,7 @@ struct diag {
 
 static struct diag *g_diags;
 static int g_ndiag, g_capdiag;
-static int g_errors, g_warnings;
+static int g_errors;
 static int g_format = DIAG_TEXT;
 static int g_color = -1;           /* -1 auto, 0 never, 1 always */
 static int g_max_errors;           /* 0: no limit */
@@ -259,8 +259,6 @@ static struct diag *new_diag(int level, const char *file, int line, int col,
     d->msg = msg;
     if (level == DIAG_ERROR)
         g_errors++;
-    else if (level == DIAG_WARNING)
-        g_warnings++;
     /* the expansion this location came from, as a note under it */
     if (level != DIAG_NOTE && file) {
         const char *m = expanded_from(file, line, col);
@@ -1079,7 +1077,6 @@ int diag_warning_group(int i)
 {
     return g_warns[i].in_wall ? 1 : g_warns[i].in_wextra ? 2 : 0;
 }
-int diag_warning_default_on(int i) { return g_warns[i].on; }
 
 /* What each warning diagnoses, and the option besides --warn=all and
  * --warn=extra that turns it on: the warnings reference
@@ -1235,13 +1232,6 @@ int diag_permissive(void) { return g_diag_permissive; }
 
 void diag_set_parseable_fixits(int on) { g_parseable_fixits = on; }
 int  diag_error_count(void)      { return g_errors; }
-/* How many warnings were REPORTED -- not to be confused with
- * diag_warning_count() above, which is how many warning OPTIONS exist
- * (for --help-warnings). This counter was incremented and never
- * readable, which a strict compiler notices
- * (-Wunused-but-set-global): a count nothing can ask for is not being
- * kept, only written. */
-int  diag_warnings_reported(void) { return g_warnings; }
 
 /* The id of the diagnostic just raised, for `embcc --explain`. */
 void diag_set_id(const char *id)
@@ -1249,13 +1239,6 @@ void diag_set_id(const char *id)
     struct diag *d = last_diag();
     if (d)
         d->id = id;
-}
-
-void diag_range(int end_col)
-{
-    struct diag *d = fixit_target();
-    if (d)
-        d->end_col = end_col;
 }
 
 /* A fix-it for the first `find` at or after (line, from_col) in the
