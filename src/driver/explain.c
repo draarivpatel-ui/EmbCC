@@ -235,15 +235,6 @@ const char *header_declaring(const char *name)
 static const int g_nexplains =
     (int)(sizeof g_explains / sizeof g_explains[0]);
 
-/* The title a diagnostic's id carries, for the "[E0001]" the reader sees. */
-const char *explain_title(const char *id)
-{
-    for (int i = 0; i < g_nexplains; i++)
-        if (!strcmp(g_explains[i].id, id))
-            return g_explains[i].title;
-    return NULL;
-}
-
 /* `embcc --explain ID`, or `--explain` for the list. Returns the exit
  * status. */
 int explain_print(const char *id)
